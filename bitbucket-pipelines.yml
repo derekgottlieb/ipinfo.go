@@ -1,0 +1,16 @@
+image: atlassian/default-image:2
+
+pipelines:
+  default:
+    - step:
+        services:
+          - docker
+        script:
+          - export VERSION=$(git describe --always HEAD)
+          - export BASENAME=derekgottlieb/ipinfo.go
+          - export IMAGE_NAME=$BASENAME:$VERSION
+          - docker build -t $IMAGE_NAME .
+          - docker login --username $DOCKER_HUB_USERNAME --password $DOCKER_HUB_PASSWORD
+          - docker push $IMAGE_NAME
+          - docker tag $IMAGE_NAME $BASENAME:latest
+          - docker push $BASENAME:latest
